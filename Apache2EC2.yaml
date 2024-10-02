@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Resources:
+  Ec2ApacheInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId:ami-085f9c64a9b75eed5
+      InstanceType: t2.micro
+      Tags:
+        - Key: Name
+          Value: My Apache Server
+        
+      UserData:
+         Fn::Base64:
+           !Sub |
+             #!/bin/sh
+             yum update -y
+             yum install httpd. x86_64 -y
+             systemctl start httpd.service
+             systemctl enable httpd.service
+             echo "Hello...using the CF and userData" > /var/www/html//index.html
+      
+      KeyName:"new_key"
+      SecurityGroups:
+        - !Ref ApacheSecurityGroup
+
+  ApacheSecurityGroup:
+    Type:AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: My Apache Security Group
+      GroupName: My Apache SG
+
+      SecurityGroupIngress:
+        -IpProtocol: "tcp"
+         CidrIp:"0.0.0.0/0"
+         FromPort: 80
+         Toport: 80
+
+        -IpProtocol: "tcp"
+         CidrIp:"0.0.0.0/0"
+         FromPort: 443
+         ToPort: 443
+
+          -IpProtocol: "tcp"
+         CidrIp:"0.0.0.0/0"
+         FromPort: 22
+         ToPort: 22
+          
+     
